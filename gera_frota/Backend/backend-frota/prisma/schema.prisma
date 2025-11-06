@@ -1,0 +1,38 @@
+// Configurações do banco e do Prisma
+
+datasource db {
+  provider = "sqlite"       
+  url      = env("DATABASE_URL") 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo da tabela Veiculo
+
+model Veiculo {
+  id                   Int      @id @default(autoincrement())
+  tipo                 String
+  marca                String
+  modelo               String
+  placa                String   @unique
+  anoFabricacao        Int
+  kmAtual              Int
+  combustivel          String
+  status               String   @default("Disponível")
+  responsavel          String?  // opcional
+  dataUltimaManutencao DateTime?
+  proximaRevisaoKm     Int?
+  documentacaoValidade DateTime?
+}
+
+//Estrutura do login
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  criadoEm  DateTime @default(now())
+}
