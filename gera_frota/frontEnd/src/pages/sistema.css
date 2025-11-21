@@ -55,25 +55,24 @@
 /* Botões */
 .btn {
   padding: 12px 18px;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
+  width: 40px;   /* largura */
+  height: 40px;   /* altura */
+  background-size: contain;
+  background-position: cover;
+  background-color: transparent;
 }
 
 .btn-pesquisar {
-  background: #0078D4;
-  color: white;
+  background-image: url('/imagens/pesquisar.png'); 
 }
 
 .btn-deletar {
-  background: #d40000;
-  color: white;
+  background-image: url('/imagens/deletar.png'); 
 }
 
 .btn-atualizar {
-  background: #3cb043;
-  color: white;
+  background-image: url('/imagens/atualizar.png'); 
 }
 
 /* Tabela */

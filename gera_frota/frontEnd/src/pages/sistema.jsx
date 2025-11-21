@@ -1,15 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./sistema.css";
 
 function Sistema() {
-  const emailLogado = localStorage.getItem("emailUsuario") || "usuário@example.com";
+  const [nomeUsuario, setNomeUsuario] = useState("");
+
+  useEffect(() => {
+    const nome = localStorage.getItem("nomeUsuario");
+    setNomeUsuario(nome);
+  }, []);
+
+  /* Botão Pesquisar*/
+  const [id, setId] = useState("");
+  const [modelo, setModelo] = useState("");
+  const [placa, setPlaca] = useState("");
+  const [resultado, setResultado] = useState([]);
+
+  const handlePesquisar = async () => {
+  try {
+    let url = "http://localhost:3000/veiculos";
+
+    if (id) {
+      url += `/id/${id}`;
+    } else if (modelo) {
+      url += `/modelo/${modelo}`;
+    } else if (placa) {
+      url += `/placa/${placa}`;
+    }
+
+    const response = await fetch(url);
+    const data = await response.json();
+    setResultado(Array.isArray(data) ? data : [data]); // garante tabela
+  } catch (error) {
+    console.error("Erro ao pesquisar:", error);
+  }
+};
+
+
 
   return (
     <div className="sistema-bg">
       <div className="sistema-card">
 
         <h1 className="titulo-sistema">
-          Acesso liberado para: <span>{emailLogado}</span>
+          Acesso liberado para: <span>{nomeUsuario}</span>
         </h1>
 
         {/* Campo de pesquisa */}
@@ -33,9 +66,9 @@ function Sistema() {
             className="search-input"
           />
 
-          <button className="btn btn-pesquisar">Pesquisar</button>
-          <button className="btn btn-deletar">Deletar</button>
-          <button className="btn btn-atualizar">Atualizar</button>
+          <button className="btn btn-pesquisar"></button>
+          <button className="btn btn-deletar"></button>
+          <button className="btn btn-atualizar"></button>
 
         </div>
 
@@ -59,12 +92,7 @@ function Sistema() {
             </tr>
           </thead>
           <tbody>
-            {/* Exemplo de linha */}
             <tr>
-              <td>001</td>
-              <td>Fiat Uno</td>
-              <td>ABC-1234</td>
-              <td>Ativo</td>
             </tr>
           </tbody>
         </table>

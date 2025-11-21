@@ -28,6 +28,12 @@ function Home() {
 
     console.log("Resposta do servidor:", response.data);
 
+    // pega o nome do usuário:
+    const nomeUsuario = response.data.usuario.nome;
+
+    // guarda no navegador:
+    localStorage.setItem("nomeUsuario", nomeUsuario);
+
     navigate("/sistema");
 
     //Limpa os inputs
