@@ -5,11 +5,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/imagens/login.jpg'); 
-  background-size: cover;     
-  background-position: center; 
+  background-image: url('/imagens/login.jpg');
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; 
+  background-attachment: fixed;
+  padding: 20px; /* Evita colar nas bordas do celular */
 }
 
 /* Card central */
@@ -20,11 +21,12 @@
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   text-align: center;
+  box-sizing: border-box;
 }
 
-
+/* Títulos */
 h1 {
   font-size: 28px;
   color: #222;
@@ -50,6 +52,7 @@ h1 {
   position: absolute;
   left: 15px;
   color: #777;
+  pointer-events: none;
 }
 
 input {
@@ -62,6 +65,7 @@ input {
   transition: border-color 0.3s;
   color: #333;
   background-color: #fff;
+  box-sizing: border-box;
 }
 
 input:focus {
@@ -78,14 +82,15 @@ button {
   border-radius: 10px;
   padding: 12px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: 0.3s;
+  font-size: 16px;
 }
 
 button:hover {
-  background-color: #52585c;
+  background-color: #42464a;
 }
 
-/* Card Erro*/
+/* Card Erro */
 .erro {
   color: rgb(160, 13, 13);
   margin-top: 10px;
@@ -110,19 +115,9 @@ button:hover {
   text-decoration: underline;
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
-  .container {
-    padding: 30px 25px;
-  }
-  h1 {
-    font-size: 24px;
-  }
-}
-
-/* Página Cadastro*/
+/* PAGINA CADASTRO */
 .cadastro-page {
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .back-button a {
@@ -134,10 +129,45 @@ button:hover {
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: 0.3s;
 }
 
 .back-button a:hover {
-  background-color: #52585c;
+  background-color: #42464a;
 }
 
+/* RESPONSIVIDADE GERAL */
+@media (max-width: 600px) {
+  .page {
+    padding: 10px;
+    background-attachment: scroll; /* evita bug no celular */
+  }
+
+  .container {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 10px 12px 10px 38px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .icon {
+    left: 12px;
+    font-size: 14px;
+  }
+}

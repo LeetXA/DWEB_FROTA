@@ -6,114 +6,105 @@ import { Link, useNavigate } from 'react-router-dom';
 import { loginUsuario } from "../services/api";
 
 function Home() {
-  const navigate = useNavigate();
+      const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    matricula: "",
-    senha: "",
-  });
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await loginUsuario(form.matricula, form.senha);
-
-      console.log("Resposta do servidor:", response.data);
-
-      // pega o nome do usuário:
-      const matriculaUser = response.data.usuario.matricula;
-
-      // guarda no navegador:
-      localStorage.setItem("matriculaUser", matriculaUser);
-
-      navigate("/sistema");
-
-      //Limpa os inputs
-      setForm({
-        matricula: "",
-        senha: "",
+      const [form, setForm] = useState({
+            matricula: "",
+            senha: "",
       });
 
-    } catch (error) {
-      setErroLogin("Matrícula ou senha incorretos!");
+      const handleChange = (e) => {
+            setForm({
+                  ...form,
+                  [e.target.name]: e.target.value,
+            });
+      };
 
-      //Limpa os inputs
-      setForm({
-        matricula: "",
-        senha: "",
-      });
+      const handleLogin = async (e) => {
+            e.preventDefault();
 
-      //Some com o erro após 10 segundos
-      setTimeout(() => {
-        setErroLogin("");
-      }, 5000);
+            try {
+                  const response = await loginUsuario(form.matricula, form.senha);
 
-      console.error("Erro no login:", error.response?.data || error);
-    }
-  };
+                  console.log("Resposta do servidor:", response.data);
 
-
-  //erro
-  const [erroLogin, setErroLogin] = useState("");
-
-  //apenas teste de layout
-  function entrar() {
-    navigate("/sistema"); // vai direto para a página Sistema
-  }
+                  const matriculaUser = response.data.matricula;
+                  localStorage.setItem("matriculaUser", matriculaUser);
+                  navigate("/sistema");
 
 
-  return (
-    <div className="page">
+                  //Limpa os inputs
+                  setForm({
+                        matricula: "",
+                        senha: "",
+                  });
 
-      {/* Card de login */}
-      <div className="container">
-        <form onSubmit={handleLogin}>
-          <h1>Portal de Controle de Veículos</h1>
-          <p className="subtitle">Acesse sua conta</p>
+            } catch (error) {
+                  setErroLogin("Matrícula ou senha incorretos!");
 
-          <div className="input-group">
-            <User className="icon" size={20} />
-            <input
-              name="matricula"
-              type="text"
-              placeholder="Matrícula"
-              value={form.matricula}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                  //Limpa os inputs
+                  setForm({
+                        matricula: "",
+                        senha: "",
+                  });
 
-          <div className="input-group">
-            <Lock className="icon" size={20} />
-            <input
-              name="senha"
-              type="password"
-              placeholder="Senha"
-              value={form.senha}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                  //Some com o erro após 10 segundos
+                  setTimeout(() => {
+                        setErroLogin("");
+                  }, 5000);
 
-          <button type="submit" onClick={entrar}>Entrar</button>
+                  console.error("Erro no login:", error.response?.data || error);
+            }
+      };
 
-          {erroLogin && <p className="erro">{erroLogin}</p>}
 
-          <p className="register">
-            <Link to="/cadastro">Cadastrar</Link>
-          </p>
-        </form>
-      </div>
-    </div>
-  );
+      //erro
+      const [erroLogin, setErroLogin] = useState("");
+
+      return (
+            <div className="page">
+
+                  {/* Card de login */}
+                  <div className="container">
+                        <form onSubmit={handleLogin}>
+                              <h1>Portal de Controle de Veículos</h1>
+                              <p className="subtitle">Acesse sua conta</p>
+
+                              <div className="input-group">
+                                    <User className="icon" size={20} />
+                                    <input
+                                          name="matricula"
+                                          type="text"
+                                          placeholder="Matrícula"
+                                          value={form.matricula}
+                                          onChange={handleChange}
+                                          required
+                                    />
+                              </div>
+
+                              <div className="input-group">
+                                    <Lock className="icon" size={20} />
+                                    <input
+                                          name="senha"
+                                          type="password"
+                                          placeholder="Senha"
+                                          value={form.senha}
+                                          onChange={handleChange}
+                                          required
+                                    />
+                              </div>
+
+                              <button type="submit">Entrar</button>
+
+                              {erroLogin && <p className="erro">{erroLogin}</p>}
+
+                              <p className="register">
+                                    <Link to="/cadastro">Cadastrar</Link>
+                              </p>
+                        </form>
+                  </div>
+            </div>
+      );
 }
 
 export default Home;

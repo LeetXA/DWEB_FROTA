@@ -9,80 +9,23 @@ function Sistema() {
   const [placa, setPlaca] = useState("");
   const [resultado, setResultado] = useState([]);
 
-  useEffect(() => {
-    const matricula = localStorage.getItem("matriculaUser");
-    setMatriculaUser(matricula);
-  }, []);
-
-  /*BOTÃO PESQUISAR */
-  const handlePesquisar = async () => {
-    try {
-      let url = '/api/veiculos';
-      if (id) url += `/${id}`;
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        setResultado([]);
-        return;
-      }
-      let data = await response.json();
-
-      // Se retornar um objeto (busca por ID), transforma em array
-      if (!Array.isArray(data)) {
-        data = [data];
-      }
-
-      // Filtrar por modelo ou placa
-      if (!id) {
-        if (modelo) {
-          data = data.filter(v =>
-            v.modelo.toLowerCase().includes(modelo.toLowerCase())
-          );
-        }
-        if (placa) {
-          data = data.filter(v =>
-            v.placa.toLowerCase().includes(placa.toLowerCase())
-          );
-        }
-      }
-
-      setResultado(data);
-    } catch (error) {
-      console.error("Erro ao pesquisar:", error);
-      setResultado([]);
-    }
+  const labels = {
+    tipo: "Tipo",
+    marca: "Marca",
+    modelo: "Modelo",
+    placa: "Placa",
+    anoFabricacao: "Ano de Fabricação",
+    kmAtual: "KM Atual",
+    combustivel: "Combustível",
+    status: "Status",
+    responsavel: "Responsável",
+    dataUltimaManutencao: "Última Manutenção",
+    proximaRevisaoKm: "Próxima Revisão (KM)",
+    documentacaoValidade: "Validade do Documento"
   };
 
-  /*BOTÃO DELETAR */
-
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  const handleDeletar = () => {
-    if (resultado.length === 0) {
-      alert("Não há itens para deletar.");
-      return;
-    }
-    setShowConfirm(true); // mostra o card
-  };
-
-
-  const confirmarDelete = async () => {
-    try {
-      for (let veiculo of resultado) {
-        await fetch(`/api/veiculos/${veiculo.id}`, { method: "DELETE" });
-      }
-      setResultado([]); // limpa tabela
-      alert(`${resultado.length} item(s) deletado(s) com sucesso!`);
-    } catch (error) {
-      console.error("Erro ao deletar:", error);
-      alert("Ocorreu um erro ao deletar os dados.");
-    } finally {
-      setShowConfirm(false); // fecha card
-    }
-  };
-
-  /*BOTÃO ATUALIZAR */
-  const [showUpdateCard, setShowUpdateCard] = useState(false);
+  const [showConfirmCard, setShowConfirmCard] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(""); // "delete" ou "update"
   const [updateData, setUpdateData] = useState({
     tipo: "",
     marca: "",
@@ -97,26 +40,93 @@ function Sistema() {
     proximaRevisaoKm: "",
     documentacaoValidade: ""
   });
+  const [showUpdateCard, setShowUpdateCard] = useState(false);
+  const [message, setMessage] = useState(""); // Mensagem de sucesso/erro
 
-  const handleAbrirAtualizar = () => {
-    if (resultado.length === 0) {
-      alert("Nenhum veículo para atualizar.");
-      return;
+  useEffect(() => {
+    const matricula = localStorage.getItem("matriculaUser");
+    setMatriculaUser(matricula);
+  }, []);
+
+  /* === PESQUISAR === */
+  const handlePesquisar = async () => {
+    try {
+      let url = '/api/veiculos';
+      if (id) url += `/${id}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        setResultado([]);
+        return;
+      }
+      let data = await response.json();
+      if (!Array.isArray(data)) data = [data];
+      if (!id) {
+        if (modelo) data = data.filter(v => v.modelo.toLowerCase().includes(modelo.toLowerCase()));
+        if (placa) data = data.filter(v => v.placa.toLowerCase().includes(placa.toLowerCase()));
+      }
+      setResultado(data);
+    } catch (error) {
+      console.error("Erro ao pesquisar:", error);
+      setResultado([]);
     }
-    setShowUpdateCard(true);
   };
 
-  const handleAtualizar = async () => {
-    if (!window.confirm(`Você está prestes a atualizar ${resultado.length} veículos. Confirmar?`)) {
-      return;
-    }
+  /* === DELETAR === */
+  const handleDeletar = () => {
+    if (resultado.length === 0) return;
+    setConfirmAction("delete");
+    setShowConfirmCard(true);
+  };
 
-    // Filtra apenas os campos preenchidos
+  const confirmarDelete = async () => {
+    try {
+      const ids = resultado.map(v => v.id);
+      await Promise.all(ids.map(id => fetch(`/api/veiculos/${id}`, { method: "DELETE" })));
+      setResultado([]);
+      setMessage(`${ids.length} item(s) deletado(s) com sucesso!`);
+    } catch (error) {
+      console.error(error);
+      setMessage("Erro ao deletar os dados.");
+    } finally {
+      setShowConfirmCard(false);
+    }
+  };
+
+  /* === ATUALIZAR === */
+  const handleAbrirUpdateCard = () => {
+    if (resultado.length === 0) return;
+    setShowUpdateCard(true);
+    setMessage(""); // limpa mensagens anteriores
+  };
+
+  const handleAbrirConfirmUpdate = () => {
     const camposParaAtualizar = {};
     Object.keys(updateData).forEach(key => {
-      if (updateData[key]) camposParaAtualizar[key] = updateData[key];
+      const value = updateData[key];
+      if (value) {
+        camposParaAtualizar[key] =
+          key === "anoFabricacao" || key === "kmAtual" || key === "proximaRevisaoKm"
+            ? Number(value)
+            : value;
+      }
     });
+    if (Object.keys(camposParaAtualizar).length === 0) return;
+    setConfirmAction("update");
+    setShowUpdateCard(false); // FECHA card de inputs ao abrir confirmação
+    setShowConfirmCard(true);
+  };
 
+  const confirmarUpdate = async () => {
+    const camposParaAtualizar = {};
+    Object.keys(updateData).forEach(key => {
+      const value = updateData[key];
+      if (value) {
+        camposParaAtualizar[key] =
+          key === "anoFabricacao" || key === "kmAtual" || key === "proximaRevisaoKm"
+            ? Number(value)
+            : value;
+      }
+    });
     try {
       const ids = resultado.map(v => v.id);
       const response = await fetch('/api/veiculos', {
@@ -124,153 +134,103 @@ function Sistema() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids, updateData: camposParaAtualizar })
       });
-
-      if (!response.ok) {
-        alert("Erro ao atualizar veículos.");
-        return;
-      }
-
-      alert(`${resultado.length} veículos atualizados com sucesso!`);
-      setShowUpdateCard(false);
+      if (!response.ok) throw new Error("Erro ao atualizar veículos.");
       setUpdateData({
-        tipo: "",
-        marca: "",
-        modelo: "",
-        placa: "",
-        ano_fabricacao: "",
-        km_atual: "",
-        combustivel: "",
-        status: "",
-        responsavel: "",
-        data_ultima_manutencao: "",
-        proxima_revisao_km: "",
-        documentacao_validade: ""
+        tipo: "", marca: "", modelo: "", placa: "", anoFabricacao: "",
+        kmAtual: "", combustivel: "", status: "", responsavel: "",
+        dataUltimaManutencao: "", proximaRevisaoKm: "", documentacaoValidade: ""
       });
-
-      handlePesquisar(); // Recarrega os veículos
-      
+      handlePesquisar();
     } catch (error) {
       console.error(error);
-      alert("Erro ao atualizar veículos.");
+      setMessage("Erro ao atualizar veículos.");
+    } finally {
+      setShowConfirmCard(false);
     }
   };
 
+  //LOGOUT
+  const handleLogout = () => {
+    localStorage.removeItem("matriculaUser"); // Remove a matrícula
+    window.location.href = "/"; // Redireciona para a página de login
+  };
 
 
   return (
     <div className="sistema-bg">
       <div className="sistema-card">
 
-        <h1 className="titulo-sistema">
-          Acesso liberado para: <span>{matriculaUser}</span>
-        </h1>
 
-        {/* Campo de pesquisa */}
-        <div className="search-area">
+        <div className="titulo-sistema-container">
+          <h1 className="titulo-sistema">
+            Acesso liberado para: <span>{matriculaUser}</span>
+          </h1>
 
-          <input
-            type="text"
-            placeholder="Buscar ID"
-            className="search-input"
-            value={id}
-            onChange={e => setId(e.target.value)}
-          />
-
-          <input
-            type="text"
-            placeholder="Buscar Modelo"
-            className="search-input"
-            value={modelo}
-            onChange={e => setModelo(e.target.value)}
-          />
-
-          <input
-            type="text"
-            placeholder="Buscar Placa"
-            className="search-input"
-            value={placa}
-            onChange={e => setPlaca(e.target.value)}
-          />
-
-          <button className="btn btn-pesquisar" onClick={handlePesquisar}></button>
-          <button className="btn btn-deletar" onClick={handleDeletar}></button>
-          <button className="btn btn-atualizar" onClick={handleAbrirAtualizar}></button>
-
+          <button className="btn-logout" onClick={handleLogout}>
+            Sair
+          </button>
         </div>
 
-        {showConfirm && (
+
+
+        <div className="search-area">
+          <input type="text" placeholder="Buscar ID" className="search-input" value={id} onChange={e => setId(e.target.value)} />
+          <input type="text" placeholder="Buscar Modelo" className="search-input" value={modelo} onChange={e => setModelo(e.target.value)} />
+          <input type="text" placeholder="Buscar Placa" className="search-input" value={placa} onChange={e => setPlaca(e.target.value)} />
+          <button className="btn btn-pesquisar" onClick={handlePesquisar}></button>
+          <button className="btn btn-deletar" onClick={handleDeletar}></button>
+          <button className="btn btn-atualizar" onClick={handleAbrirUpdateCard}></button>
+        </div>
+
+        {/* Mensagem de sucesso/erro */}
+        {message && <div className="message">{message}</div>}
+
+        {/* Card de confirmação */}
+        {showConfirmCard && (
           <div className="confirm-card">
             <div className="confirm-content">
               <h2>Confirmação</h2>
-              <p>Deseja realmente deletar {resultado.length} item(s)?</p>
-              <button className="btn-card" onClick={confirmarDelete}>Sim</button>
-              <button className="btn-card" onClick={() => setShowConfirm(false)}>Não</button>
+              <p>{confirmAction === "delete" ? `Deseja realmente deletar ${resultado.length} item(s)?` : `Deseja realmente atualizar ${resultado.length} veículo(s)?`}</p>
+              <button className="btn-card" onClick={confirmAction === "delete" ? confirmarDelete : confirmarUpdate}>Sim</button>
+              <button className="btn-card" onClick={() => setShowConfirmCard(false)}>Não</button>
             </div>
           </div>
         )}
 
+        {/* Card de atualização */}
         {showUpdateCard && (
           <div className="update-card">
             <h3>Atualização em Massa</h3>
             <p>Preencha os campos que deseja atualizar. Campos vazios serão ignorados.</p>
-            {Object.keys(updateData).map((key) => (
-              <input
-                key={key}
-                type="text"
-                placeholder={key.replace(/_/g, " ")}
-                value={updateData[key]}
-                onChange={(e) => setUpdateData(prev => ({ ...prev, [key]: e.target.value }))}
-              />
+            {Object.keys(updateData).map(key => (
+              <input key={key} type="text" placeholder={labels[key]} value={updateData[key]} onChange={e => setUpdateData(prev => ({ ...prev, [key]: e.target.value }))} className="update-input" />
             ))}
             <div className="update-buttons">
-              <button onClick={handleAtualizar}>OK</button>
+              <button onClick={handleAbrirConfirmUpdate}>OK</button>
               <button onClick={() => setShowUpdateCard(false)}>Cancelar</button>
             </div>
           </div>
         )}
 
-
-
         {/* Tabela */}
         <table className="tabela-resultados">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Tipo</th>
-              <th>Marca</th>
-              <th>Modelo</th>
-              <th>Placa</th>
-              <th>Fabricação</th>
-              <th>KM Atual</th>
-              <th>Combustível</th>
-              <th>Status</th>
-              <th>Responsável</th>
-              <th>Última Manutenção</th>
-              <th>Próxima Revisão</th>
-              <th>Documento</th>
+              <th>ID</th><th>Tipo</th><th>Marca</th><th>Modelo</th><th>Placa</th>
+              <th>Fabricação</th><th>KM Atual</th><th>Combustível</th><th>Status</th>
+              <th>Responsável</th><th>Última Manutenção</th><th>Próxima Revisão</th><th>Documento</th>
             </tr>
           </thead>
           <tbody>
-            {resultado.map((v) => (
+            {resultado.map(v => (
               <tr key={v.id}>
-                <td>{v.id}</td>
-                <td>{v.tipo}</td>
-                <td>{v.marca}</td>
-                <td>{v.modelo}</td>
-                <td>{v.placa}</td>
-                <td>{v.ano_fabricacao}</td>
-                <td>{v.km_atual}</td>
-                <td>{v.combustivel}</td>
-                <td>{v.status}</td>
-                <td>{v.responsavel}</td>
-                <td>{v.data_ultima_manutencao}</td>
-                <td>{v.proxima_revisao_km}</td>
-                <td>{v.documentacao_validade}</td>
+                <td>{v.id}</td><td>{v.tipo}</td><td>{v.marca}</td><td>{v.modelo}</td><td>{v.placa}</td>
+                <td>{v.ano_fabricacao}</td><td>{v.km_atual}</td><td>{v.combustivel}</td><td>{v.status}</td>
+                <td>{v.responsavel}</td><td>{v.data_ultima_manutencao}</td><td>{v.proxima_revisao_km}</td><td>{v.documentacao_validade}</td>
               </tr>
             ))}
           </tbody>
         </table>
-
       </div>
     </div>
   );

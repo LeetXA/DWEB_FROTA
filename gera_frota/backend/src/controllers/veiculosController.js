@@ -2,6 +2,7 @@ import { db } from "../db/index.js";
 import { veiculos } from "../db/schema.js";
 import { Veiculo } from "../classes/Veiculo.js";
 import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 
 // Listar todos os veículos
 export const listVeiculos = async (req, res) => {
@@ -94,62 +95,61 @@ export const updateVeiculo = async (req, res) => {
     ];
 
     campos.forEach(c => {
-        if (p[c] !== undefined) {
-            // converte nomes de campo para os do banco, se necessário
-            const dbField = c === "anoFabricacao" ? "ano_fabricacao" :
-                            c === "kmAtual" ? "km_atual" :
-                            c === "dataUltimaManutencao" ? "data_ultima_manutencao" :
-                            c === "proximaRevisaoKm" ? "proxima_revisao_km" :
-                            c === "documentacaoValidade" ? "documentacao_validade" :
-                            c;
-            updateData[dbField] = p[c];
-        }
-        });
+      if (p[c] !== undefined) {
+        // converte nomes de campo para os do banco, se necessário
+        const dbField = c === "anoFabricacao" ? "ano_fabricacao" :
+          c === "kmAtual" ? "km_atual" :
+            c === "dataUltimaManutencao" ? "data_ultima_manutencao" :
+              c === "proximaRevisaoKm" ? "proxima_revisao_km" :
+                c === "documentacaoValidade" ? "documentacao_validade" :
+                  c;
+        updateData[dbField] = p[c];
+      }
+    });
 
-        await db.update(veiculos).set(updateData).where(eq(veiculos.id, id));
-        return res.json({ message: "Veículo atualizado" });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Erro ao atualizar veículo" });
-    }
-    };
+    await db.update(veiculos).set(updateData).where(eq(veiculos.id, id));
+    return res.json({ message: "Veículo atualizado" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao atualizar veículo" });
+  }
+};
 
-    // Deletar veículo pelo ID
-    export const deleteVeiculo = async (req, res) => {
-    try {
-        const id = Number(req.params.id);
+// Deletar veículo pelo ID
+export const deleteVeiculo = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-        // Checa se o veículo existe
-        const rows = await db.select().from(veiculos).where(eq(veiculos.id, id));
-        if (!rows || rows.length === 0) return res.status(404).json({ message: "Veículo não encontrado" });
+    // Checa se o veículo existe
+    const rows = await db.select().from(veiculos).where(eq(veiculos.id, id));
+    if (!rows || rows.length === 0) return res.status(404).json({ message: "Veículo não encontrado" });
 
-        await db.delete(veiculos).where(eq(veiculos.id, id));
-        return res.json({ message: "Veículo removido" });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Erro ao remover veículo" });
-    }
-    };
+    await db.delete(veiculos).where(eq(veiculos.id, id));
+    return res.json({ message: "Veículo removido" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao remover veículo" });
+  }
+};
 
-    // Atualizar vários veículos em lote
+// Atualizar vários veículos em lote
 export const updateVeiculosEmLote = async (req, res) => {
   try {
     const { ids, updateData } = req.body;
     if (!ids || !updateData) return res.status(400).json({ message: "IDs e dados para atualizar são obrigatórios" });
 
     const dbUpdateData = {};
-    // mapear os campos do front para os campos do banco
     Object.keys(updateData).forEach(c => {
       const dbField = c === "anoFabricacao" ? "ano_fabricacao" :
-                      c === "kmAtual" ? "km_atual" :
-                      c === "dataUltimaManutencao" ? "data_ultima_manutencao" :
-                      c === "proximaRevisaoKm" ? "proxima_revisao_km" :
-                      c === "documentacaoValidade" ? "documentacao_validade" :
-                      c;
+        c === "kmAtual" ? "km_atual" :
+          c === "dataUltimaManutencao" ? "data_ultima_manutencao" :
+            c === "proximaRevisaoKm" ? "proxima_revisao_km" :
+              c === "documentacaoValidade" ? "documentacao_validade" :
+                c;
       dbUpdateData[dbField] = updateData[c];
     });
 
-    await db.update(veiculos).set(dbUpdateData).where(veiculos.id.in(ids));
+    await db.update(veiculos).set(dbUpdateData).where(inArray(veiculos.id, ids));
 
     return res.json({ message: `${ids.length} veículo(s) atualizado(s)` });
   } catch (error) {
@@ -164,7 +164,7 @@ export const deleteVeiculosEmLote = async (req, res) => {
     const { ids } = req.body;
     if (!ids) return res.status(400).json({ message: "IDs são obrigatórios" });
 
-    await db.delete(veiculos).where(veiculos.id.in(ids));
+    await db.delete(veiculos).where(inArray(veiculos.id, ids));
     return res.json({ message: `${ids.length} veículo(s) removido(s)` });
   } catch (error) {
     console.error(error);

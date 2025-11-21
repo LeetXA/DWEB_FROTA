@@ -1,15 +1,22 @@
 import axios from "axios";
 
+//const api = axios.create({
+//  baseURL: "https://shocking-mausoleum-jj946594j5rqh5rq-3000.app.github.dev/",
+//  headers: {
+//    "Content-Type": "application/json",
+//  },
+//});
+
 const api = axios.create({
-  baseURL: "https://shocking-mausoleum-jj946594j5rqh5rq-3000.app.github.dev/",
+  baseURL: "/api", // agora usa o proxy do Vite
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 // -------- ROTAS DE LOGIN --------
-export const loginUsuario = (email, senha) => {
-  return api.post("/login", { email, senha });
+export const loginUsuario = (matricula, senha) => {
+  return api.post("/login", { matricula, senha });
 };
 
 // -------- ROTAS DE VEÍCULOS --------

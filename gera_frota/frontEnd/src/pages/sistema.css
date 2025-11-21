@@ -1,4 +1,4 @@
-/* Fundo igual ao login */
+/* Fundo */
 .sistema-bg {
   background-image: url('/imagens/login.jpg'); 
   background-size: cover;
@@ -11,41 +11,67 @@
   align-items: center;
 }
 
-/* Card*/
+/* Card */
 .sistema-card {
-  width: calc(100% - 1cm);
-  height: calc(100% - 1cm);
+  width: 95%;
+  max-width: 1400px;
+  height: 95%;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(6px);
   border-radius: 16px;
-  padding: 40px;
+  padding: 30px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
 
   display: flex;
   flex-direction: column;
   gap: 25px;
+  overflow-y: auto;
 }
 
-/* Título */
+/* Container do título + logout */
+.titulo-sistema-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  width: 100%;
+}
+
 .titulo-sistema {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  margin: 0;
 }
 
 .titulo-sistema span {
   color: #05107a;
 }
 
+/* Botão de logout */
+.btn-logout {
+  background-color: #1a1919;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 80px;
+  height: 30px;
+}
+
+.btn-logout:hover {
+  background-color: #690000;
+}
+
 /* Área de busca */
 .search-area {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
 }
 
 .search-input {
   padding: 12px;
-  width: 300px;
+  flex: 1 1 250px; /* RESPONSIVO */
   font-size: 16px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -54,12 +80,10 @@
 
 /* Botões */
 .btn {
-  padding: 12px 18px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  width: 40px;   /* largura */
-  height: 40px;   /* altura */
-  background-size: contain;
-  background-position: cover;
+  background-size: cover;
   background-color: transparent;
 }
 
@@ -80,20 +104,21 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  overflow-x: auto;
 }
 
 .tabela-resultados th,
 .tabela-resultados td {
-  padding: 12px;
+  padding: 10px;
   border-bottom: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .tabela-resultados th {
   background: #f2f2f2;
-  text-align: left;
 }
 
-/*CARD DELETE*/
+/* Card de confirmação */
 .confirm-card {
   position: fixed;
   top: 0;
@@ -107,39 +132,25 @@
   z-index: 1000;
 }
 
-.btn-card
-{
-  cursor: pointer;
-  width: 50px;   /* largura */
-  height: 40px;   /* altura */
-  background-position: cover;
-  background-color: black;
-  text-align: center;
-  margin: 0 5px;
-}
-
 .confirm-content {
   background: #fff;
-  padding: 30px;
+  padding: 25px;
   border-radius: 10px;
   text-align: center;
   min-width: 300px;
 }
 
-.confirm-content h2 {
-  margin-bottom: 15px;
+.btn-card {
+  cursor: pointer;
+  padding: 10px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  margin: 0 5px;
 }
 
-.confirm-content p {
-  margin-bottom: 20px;
-}
-
-.confirm-content .btn {
-  margin: 0 10px;
-}
-
-
-/*CARD PARA UPDATE*/
+/* Card de update */
 .update-card {
   position: fixed;
   top: 50%;
@@ -152,12 +163,13 @@
   z-index: 1000;
   max-height: 80vh;
   overflow-y: auto;
+  width: 90%;
+  max-width: 500px;
 }
 
 .update-card input {
-  display: block;
   margin: 5px 0;
-  padding: 5px;
+  padding: 8px;
   width: 100%;
 }
 
@@ -165,4 +177,24 @@
   margin-top: 10px;
   display: flex;
   gap: 10px;
+}
+
+/* RESPONSIVIDADE MOBILE */
+@media (max-width: 600px) {
+  .titulo-sistema {
+    font-size: 18px;
+  }
+
+  .btn-logout {
+    padding: 6px 10px;
+  }
+
+  .search-input {
+    flex: 1 1 100%;
+  }
+
+  .tabela-resultados th,
+  .tabela-resultados td {
+    font-size: 12px;
+  }
 }
