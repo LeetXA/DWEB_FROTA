@@ -7,7 +7,7 @@ const usuarios = [
 { matricula: "20240003", senha: "AdminFrota#1" },
 { matricula: "20240004", senha: "Seguranca99" }
 ];
-router.post("/login", (req, res) => {
+router.post("/", (req, res) => {
 const { matricula, senha } = req.body;
 const user = usuarios.find(u => u.matricula === matricula && u.senha ===
 senha);
