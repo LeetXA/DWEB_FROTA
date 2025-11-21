@@ -1,0 +1,14 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import veiculosRouter from "./routes/veiculos.js";
+import authRouter from "./routes/auth.js";
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.get("/", (req, res) => res.send("API Gestão de Frota — ativo"));
+app.use("/veiculos", veiculosRouter);
+app.use("/login", authRouter);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
