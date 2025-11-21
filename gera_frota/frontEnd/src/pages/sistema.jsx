@@ -2,39 +2,30 @@ import React, { useEffect, useState } from "react";
 import "./sistema.css";
 
 function Sistema() {
-  const [nomeUsuario, setNomeUsuario] = useState("");
 
-  useEffect(() => {
-    const nome = localStorage.getItem("nomeUsuario");
-    setNomeUsuario(nome);
-  }, []);
-
-  /* Botão Pesquisar*/
+  const [matriculaUser, setMatriculaUser] = useState("");
   const [id, setId] = useState("");
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [resultado, setResultado] = useState([]);
+  
+  useEffect(() => {
+    const matricula = localStorage.getItem("matriculaUser");
+    setMatriculaUser(matricula);
+  }, []);
 
-  const handlePesquisar = async () => {
+  const testarConexao = async () => {
   try {
-    let url = "http://localhost:3000/veiculos";
-
-    if (id) {
-      url += `/id/${id}`;
-    } else if (modelo) {
-      url += `/modelo/${modelo}`;
-    } else if (placa) {
-      url += `/placa/${placa}`;
-    }
-
-    const response = await fetch(url);
-    const data = await response.json();
-    setResultado(Array.isArray(data) ? data : [data]); // garante tabela
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const response = await fetch(`${API_URL}/`);
+    const data = await response.text();
+    console.log("Resposta do backend:", data);
+    alert(`Backend respondeu: ${data}`);
   } catch (error) {
-    console.error("Erro ao pesquisar:", error);
+    console.error("Erro ao conectar com o backend:", error);
+    alert("Não foi possível conectar ao backend. Veja o console.");
   }
 };
-
 
 
   return (
@@ -42,28 +33,36 @@ function Sistema() {
       <div className="sistema-card">
 
         <h1 className="titulo-sistema">
-          Acesso liberado para: <span>{nomeUsuario}</span>
+          Acesso liberado para: <span>{matriculaUser}</span>
         </h1>
 
         {/* Campo de pesquisa */}
         <div className="search-area">
 
-          <input 
+          <button onClick={testarConexao}>Testar Conexão com Backend</button>
+
+          <input
             type="text"
             placeholder="Buscar ID"
             className="search-input"
+            value={id}
+            onChange={e => setId(e.target.value)}
           />
 
-          <input 
+          <input
             type="text"
             placeholder="Buscar Modelo"
             className="search-input"
+            value={modelo}
+            onChange={e => setModelo(e.target.value)}
           />
 
-          <input 
+          <input
             type="text"
             placeholder="Buscar Placa"
             className="search-input"
+            value={placa}
+            onChange={e => setPlaca(e.target.value)}
           />
 
           <button className="btn btn-pesquisar"></button>
@@ -92,8 +91,23 @@ function Sistema() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-            </tr>
+            {resultado.map((v) => (
+              <tr key={v.id}>
+                <td>{v.id}</td>
+                <td>{v.tipo}</td>
+                <td>{v.marca}</td>
+                <td>{v.modelo}</td>
+                <td>{v.placa}</td>
+                <td>{v.fabricacao}</td>
+                <td>{v.kmAtual}</td>
+                <td>{v.combustivel}</td>
+                <td>{v.status}</td>
+                <td>{v.responsavel}</td>
+                <td>{v.ultimaManutencao}</td>
+                <td>{v.proximaRevisao}</td>
+                <td>{v.documento}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
 

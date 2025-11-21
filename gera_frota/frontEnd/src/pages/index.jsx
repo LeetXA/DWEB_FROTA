@@ -9,7 +9,7 @@ function Home() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    matricula: "",
     senha: "",
   });
 
@@ -21,44 +21,44 @@ function Home() {
   };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await loginUsuario(form.email, form.senha);
+    try {
+      const response = await loginUsuario(form.matricula, form.senha);
 
-    console.log("Resposta do servidor:", response.data);
+      console.log("Resposta do servidor:", response.data);
 
-    // pega o nome do usuário:
-    const nomeUsuario = response.data.usuario.nome;
+      // pega o nome do usuário:
+      const matriculaUser = response.data.usuario.matricula;
 
-    // guarda no navegador:
-    localStorage.setItem("nomeUsuario", nomeUsuario);
+      // guarda no navegador:
+      localStorage.setItem("matriculaUser", matriculaUser);
 
-    navigate("/sistema");
+      navigate("/sistema");
 
-    //Limpa os inputs
-    setForm({
-      email: "",
-      senha: "",
-    });
+      //Limpa os inputs
+      setForm({
+        matricula: "",
+        senha: "",
+      });
 
-  } catch (error) {
-    setErroLogin("Email ou senha incorretos!");
+    } catch (error) {
+      setErroLogin("Matrícula ou senha incorretos!");
 
-    //Limpa os inputs
-    setForm({
-      email: "",
-      senha: "",
-    });
+      //Limpa os inputs
+      setForm({
+        matricula: "",
+        senha: "",
+      });
 
-    //Some com o erro após 10 segundos
-    setTimeout(() => {
-      setErroLogin("");
-    }, 5000);
+      //Some com o erro após 10 segundos
+      setTimeout(() => {
+        setErroLogin("");
+      }, 5000);
 
-    console.error("Erro no login:", error.response?.data || error);
-  }
-};
+      console.error("Erro no login:", error.response?.data || error);
+    }
+  };
 
 
   //erro
@@ -82,10 +82,10 @@ function Home() {
           <div className="input-group">
             <User className="icon" size={20} />
             <input
-              name="email" //talvez mudar para matricula
+              name="matricula"
               type="text"
-              placeholder="E-mail"
-              value={form.email}
+              placeholder="Matrícula"
+              value={form.matricula}
               onChange={handleChange}
               required
             />
@@ -108,7 +108,7 @@ function Home() {
           {erroLogin && <p className="erro">{erroLogin}</p>}
 
           <p className="register">
-          <Link to="/cadastro">Cadastrar</Link>
+            <Link to="/cadastro">Cadastrar</Link>
           </p>
         </form>
       </div>
