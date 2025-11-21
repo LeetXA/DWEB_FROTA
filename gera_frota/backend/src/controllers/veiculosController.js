@@ -130,3 +130,44 @@ export const updateVeiculo = async (req, res) => {
         return res.status(500).json({ message: "Erro ao remover veículo" });
     }
     };
+
+    // Atualizar vários veículos em lote
+export const updateVeiculosEmLote = async (req, res) => {
+  try {
+    const { ids, updateData } = req.body;
+    if (!ids || !updateData) return res.status(400).json({ message: "IDs e dados para atualizar são obrigatórios" });
+
+    const dbUpdateData = {};
+    // mapear os campos do front para os campos do banco
+    Object.keys(updateData).forEach(c => {
+      const dbField = c === "anoFabricacao" ? "ano_fabricacao" :
+                      c === "kmAtual" ? "km_atual" :
+                      c === "dataUltimaManutencao" ? "data_ultima_manutencao" :
+                      c === "proximaRevisaoKm" ? "proxima_revisao_km" :
+                      c === "documentacaoValidade" ? "documentacao_validade" :
+                      c;
+      dbUpdateData[dbField] = updateData[c];
+    });
+
+    await db.update(veiculos).set(dbUpdateData).where(veiculos.id.in(ids));
+
+    return res.json({ message: `${ids.length} veículo(s) atualizado(s)` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao atualizar veículos em lote" });
+  }
+};
+
+// Deletar vários veículos em lote
+export const deleteVeiculosEmLote = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids) return res.status(400).json({ message: "IDs são obrigatórios" });
+
+    await db.delete(veiculos).where(veiculos.id.in(ids));
+    return res.json({ message: `${ids.length} veículo(s) removido(s)` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao deletar veículos em lote" });
+  }
+};
