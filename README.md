@@ -29,6 +29,10 @@ npm run dev
 
 O GitHub Codespaces irá abrir automaticamente a página de login.
 
+## Acesso ao Sistema:
+
+Matrícula: 20240001;
+Senha: Frota@2024;
 ---
 
 ## 🚗 Sobre o Sistema
