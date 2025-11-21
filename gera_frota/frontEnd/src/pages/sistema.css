@@ -1,0 +1,95 @@
+/* Fundo igual ao login */
+.sistema-bg {
+  background-image: url('/imagens/login.jpg'); 
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card*/
+.sistema-card {
+  width: calc(100% - 1cm);
+  height: calc(100% - 1cm);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Título */
+.titulo-sistema {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.titulo-sistema span {
+  color: #05107a;
+}
+
+/* Área de busca */
+.search-area {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-input {
+  padding: 12px;
+  width: 300px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+/* Botões */
+.btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-pesquisar {
+  background: #0078D4;
+  color: white;
+}
+
+.btn-deletar {
+  background: #d40000;
+  color: white;
+}
+
+.btn-atualizar {
+  background: #3cb043;
+  color: white;
+}
+
+/* Tabela */
+.tabela-resultados {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.tabela-resultados th,
+.tabela-resultados td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela-resultados th {
+  background: #f2f2f2;
+  text-align: left;
+}
