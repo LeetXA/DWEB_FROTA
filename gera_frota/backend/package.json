@@ -1,0 +1,24 @@
+{
+"name": "backend-frota",
+"version": "1.0.0",
+"main": "src/server.js",
+"type": "module",
+"scripts": {
+"dev": "node --watch src/server.js",
+"generate": "npx drizzle-kit generate --config=drizzle.config.mjs",
+"migrate": "npx drizzle-kit push --config=drizzle.config.mjs",
+"seed": "node src/seed.js"
+},
+"dependencies": {
+"better-sqlite3": "^12.4.1",
+"cors": "^2.8.5",
+"dotenv": "^17.2.3",
+"drizzle-orm": "^0.44.7",
+"express": "^5.1.0"
+},
+"devDependencies": {
+"drizzle-kit": "^0.31.7",
+"ts-node-dev": "^2.0.0",
+"nodemon": "^3.0.1"
+}
+}
