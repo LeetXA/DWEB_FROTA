@@ -30,44 +30,40 @@ export const getVeiculo = async (req, res) => {
 
 // Criar um novo veículo
 export const createVeiculo = async (req, res) => {
+  console.log("[CREATE BODY]", req.body);
+
   try {
     const p = req.body;
-    if (!p || !p.tipo || !p.marca || !p.modelo || !p.placa) {
-      return res.status(400).json({ message: "Campos obrigatórios faltando" });
+
+    // Validação de todos os campos obrigatórios
+    if (
+      !p.tipo || !p.marca || !p.modelo || !p.placa ||
+      p.ano_fabricacao === undefined || p.km_atual === undefined ||
+      !p.combustivel || !p.status || !p.responsavel ||
+      !p.data_ultima_manutencao || p.proxima_revisao_km === undefined || !p.documentacao_validade
+    ) {
+      return res.status(400).json({ message: "Todos os campos são obrigatórios" });
     }
 
-    const v = new Veiculo(
-      0,
-      p.tipo,
-      p.marca,
-      p.modelo,
-      p.placa,
-      p.anoFabricacao,
-      p.kmAtual,
-      p.combustivel,
-      p.status,
-      p.responsavel,
-      p.dataUltimaManutencao,
-      p.proximaRevisaoKm,
-      p.documentacaoValidade
-    );
 
     const result = await db.insert(veiculos).values({
-      tipo: v.getTipo(),
-      marca: v.getMarca(),
-      modelo: v.getModelo(),
-      placa: v.getPlaca(),
-      ano_fabricacao: v.getAnoFabricacao(),
-      km_atual: v.getKmAtual(),
-      combustivel: v.getCombustivel(),
-      status: v.getStatus(),
-      responsavel: v.getResponsavel(),
-      data_ultima_manutencao: v.getDataUltimaManutencao(),
-      proxima_revisao_km: v.getProximaRevisaoKm(),
-      documentacao_validade: v.getDocumentacaoValidade()
+      tipo: p.tipo,
+      marca: p.marca,
+      modelo: p.modelo,
+      placa: p.placa,
+      ano_fabricacao: Number(p.ano_fabricacao),
+      km_atual: Number(p.km_atual),
+      combustivel: p.combustivel,
+      status: p.status,
+      responsavel: p.responsavel,
+      data_ultima_manutencao: p.data_ultima_manutencao,
+      proxima_revisao_km: Number(p.proxima_revisao_km),
+      documentacao_validade: p.documentacao_validade
     });
 
+
     return res.status(201).json({ message: "Veículo criado", result });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Erro ao criar veículo" });
